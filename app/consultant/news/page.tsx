@@ -18,6 +18,7 @@ interface NewsItem {
   source: string
   date: string
   icon: "landmark" | "trending" | "lightbulb" | "building" | "dollar" | "leaf" | "target" | "chart"
+  url: string
 }
 
 const newsData: NewsItem[] = [
@@ -28,109 +29,58 @@ const newsData: NewsItem[] = [
       { label: "규제", variant: "regulation" },
       { label: "필독", variant: "error" },
     ],
-    title: "2028년 탄소 공시 의무화, 중견기업도 대상 확대",
+    title: "[열린송현] ESG 공시, 책임의 시대가 온다",
     description:
-      "금융위원회가 기존 자산 2조원 이상 상장사에서 5천억원 이상 중견기업까지 탄소 배출 공시 의무를 확대한다고 발표했습니다.",
-    source: "ESG Economy",
-    date: "2026-01-13",
+      "ESG 공시 의무화 로드맵이 가시화하면서 기업의 시계가 빨라지고 있다. 단순 정보공개를 넘어 입증의 영역으로 전환되며, 현실성 없는 목표는 평판 훼손과 재무 부담이 될 수 있다.",
+    source: "서울경제",
+    date: "2024-10-16",
     icon: "landmark",
+    url: "https://www.sedaily.com/NewsView/2K7AS40WU4",
   },
   {
     id: 2,
-    category: "trend",
-    tags: [
-      { label: "트렌드", variant: "trend" },
-      { label: "인기", variant: "success" },
-    ],
-    title: "전기차 법인 택시 비중 40% 돌파... 탄소 감축 효과 입증",
-    description:
-      "서울시 법인 택시 중 전기차 비중이 40%를 넘어서며 연간 15만 톤의 탄소 배출 감축 효과를 보이고 있습니다.",
-    source: "Green Transport",
-    date: "2026-01-12",
-    icon: "trending",
-  },
-  {
-    id: 3,
     category: "insight",
     tags: [
       { label: "인사이트", variant: "insight" },
-      { label: "추천", variant: "success" },
+      { label: "Scope3", variant: "error" },
     ],
-    title: "Scope 3 산정의 핵심은 '데이터 자동화'",
+    title: "[칼럼] 탄소회계 기준의 변화, Scope 3 감축이 핵심",
     description:
-      "글로벌 ESG 컨설팅사 분석에 따르면, Scope 3 배출량 산정에 성공한 기업의 85%가 데이터 자동 수집 시스템을 구축했습니다.",
-    source: "ESG Insight",
-    date: "2026-01-11",
-    icon: "lightbulb",
+      "기후공시 체계 전환과 함께 Scope 3가 핵심 공시 영역으로 부상했다. 협력사 활동부터 제품 유통·폐기까지 포함하는 광범위한 영역에 대한 감축 계획 요구가 커지고 있다.",
+    source: "파이낸스투데이",
+    date: "2025-12-23",
+    icon: "chart",
+    url: "https://www.fntoday.co.kr/news/articleView.html?idxno=372254",
+  },
+  {
+    id: 3,
+    category: "regulation",
+    tags: [
+      { label: "규제", variant: "regulation" },
+      { label: "무역", variant: "error" },
+    ],
+    title: "‘탄소 무역규제’ 글로벌 공급망 전반으로 확산",
+    description:
+      "EU의 탄소국경조정제도(CBAM)를 기점으로 영국, 미국 등 주요국이 유사 제도를 도입하며 탄소 무역규제가 글로벌 공급망 전반으로 확산되고 있다.",
+    source: "에너지플랫폼뉴스",
+    date: "2025-10-15",
+    icon: "building",
+    url: "https://www.e-platform.net/news/articleView.html?idxno=97033",
   },
   {
     id: 4,
     category: "case",
     tags: [
       { label: "사례", variant: "case" },
-      { label: "사례", variant: "case" },
+      { label: "AI", variant: "success" },
     ],
-    title: "A사, 카카오T 연동으로 탄소 회계 처리 시간 90% 단축",
+    title: "구글 AI 모빌리티 솔루션, 연료·탄소 감축 입증",
     description:
-      "중견 제조업체 A사가 카카오 T 비즈니스 연동을 통해 출장 및 물류 탄소 데이터 처리 시간을 월 80시간에서 8시간으로 줄였습니다.",
-    source: "Business Case Study",
-    date: "2026-01-10",
-    icon: "building",
-  },
-  {
-    id: 5,
-    category: "regulation",
-    tags: [
-      { label: "규제", variant: "regulation" },
-      { label: "필독", variant: "error" },
-    ],
-    title: "EU CBAM 적용 본격화... 수출 기업 탄소 증명 필수",
-    description:
-      "유럽연합의 탄소국경조정제도(CBAM)가 본격 시행되며, EU 수출 기업들의 탄소 배출 증명이 필수가 되었습니다.",
-    source: "Global Trade",
-    date: "2026-01-09",
-    icon: "landmark",
-  },
-  {
-    id: 6,
-    category: "trend",
-    tags: [
-      { label: "트렌드", variant: "trend" },
-      { label: "인기", variant: "success" },
-    ],
-    title: "ESG 평가 항목에 '임직원 출퇴근 탄소 관리' 추가",
-    description: "주요 ESG 평가기관들이 기업의 임직원 출퇴근 탄소 관리 여부를 평가 항목에 포함하기 시작했습니다.",
-    source: "ESG Rating",
-    date: "2026-01-08",
-    icon: "target",
-  },
-  {
-    id: 7,
-    category: "insight",
-    tags: [
-      { label: "인사이트", variant: "insight" },
-      { label: "추천", variant: "success" },
-    ],
-    title: "탄소 배출권 가격 톤당 5만원 돌파 전망",
-    description:
-      "국내 탄소배출권 시장에서 톤당 가격이 5만원을 돌파할 것으로 예상되며, 기업들의 감축 노력이 더욱 중요해졌습니다.",
-    source: "Carbon Market",
-    date: "2026-01-07",
-    icon: "dollar",
-  },
-  {
-    id: 8,
-    category: "case",
-    tags: [
-      { label: "사례", variant: "case" },
-      { label: "사례", variant: "case" },
-    ],
-    title: "B사, EV 전환으로 연간 5억원 유류비 절감 성공",
-    description:
-      "물류 기업 B사가 법인 차량의 70%를 전기차로 전환하여 연간 5억원의 유류비를 절감하고 탄소 배출을 60% 감축했습니다.",
-    source: "Success Story",
-    date: "2026-01-06",
+      "디지털 전환의 상징인 AI가 친환경 혁신의 주역으로 떠오르고 있다. 구글의 AI 모빌리티 솔루션은 브라질에서 한 달간 탄소 4000톤을 감축하는 성과를 냈다.",
+    source: "ESG경제",
+    date: "2025-11-21",
     icon: "leaf",
+    url: "https://www.esgeconomy.com/news/articleView.html?idxno=13517",
   },
 ]
 
@@ -212,43 +162,55 @@ export default function ConsultantNewsPage() {
           {filteredNews.map((news) => {
             const Icon = iconMap[news.icon]
             return (
-              <GreenPathCard key={news.id} hover className="flex flex-col">
-                <div className="flex gap-4">
-                  {/* Icon */}
-                  <div
-                    className={cn(
-                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
-                      iconColorMap[news.icon],
-                    )}
-                  >
-                    <Icon className="h-6 w-6" />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex flex-1 flex-col">
-                    {/* Tags */}
-                    <div className="mb-2 flex flex-wrap gap-1.5">
-                      {news.tags.map((tag, idx) => (
-                        <GreenPathBadge key={idx} variant={tag.variant}>
-                          {tag.label}
-                        </GreenPathBadge>
-                      ))}
+              <a
+                key={news.id}
+                href={news.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <GreenPathCard hover className="flex flex-col h-full transition-all duration-300 group-hover:-translate-y-1">
+                  <div className="flex gap-4">
+                    {/* Icon */}
+                    <div
+                      className={cn(
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors",
+                        iconColorMap[news.icon],
+                      )}
+                    >
+                      <Icon className="h-6 w-6" />
                     </div>
 
-                    {/* Title */}
-                    <h3 className="mb-2 font-semibold text-foreground leading-snug">{news.title}</h3>
+                    {/* Content */}
+                    <div className="flex flex-1 flex-col">
+                      {/* Tags */}
+                      <div className="mb-2 flex flex-wrap gap-1.5">
+                        {news.tags.map((tag, idx) => (
+                          <GreenPathBadge key={idx} variant={tag.variant}>
+                            {tag.label}
+                          </GreenPathBadge>
+                        ))}
+                      </div>
 
-                    {/* Description */}
-                    <p className="mb-4 text-sm text-muted-foreground leading-relaxed">{news.description}</p>
+                      {/* Title */}
+                      <h3 className="mb-2 font-semibold text-foreground leading-snug group-hover:text-indigo-400 transition-colors">
+                        {news.title}
+                      </h3>
 
-                    {/* Footer */}
-                    <div className="mt-auto flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{news.source}</span>
-                      <span>{news.date}</span>
+                      {/* Description */}
+                      <p className="mb-4 text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                        {news.description}
+                      </p>
+
+                      {/* Footer */}
+                      <div className="mt-auto flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{news.source}</span>
+                        <span>{news.date}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </GreenPathCard>
+                </GreenPathCard>
+              </a>
             )
           })}
         </div>

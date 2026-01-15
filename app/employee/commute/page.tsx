@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { GreenPathHeader } from "@/components/ui/greenpath-header"
 import {
   GreenPathCard,
@@ -12,25 +12,23 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, TrendingDown, Sparkles, Home, Check, Zap, Fuel, Battery, Footprints, Train } from "lucide-react"
+import { CalendarIcon, TrendingDown, Sparkles, Home, Check, Zap, Fuel, Battery, Footprints, Train, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { ko } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 
 // 목업 데이터
-const recentRecords = [
-  { date: "2026-01-14", type: "eco", distance: null, emission: 0 },
-  { date: "2026-01-13", type: "car", distance: 15.2, emission: 3.1 },
-  { date: "2026-01-10", type: "eco", distance: null, emission: 0 },
-  { date: "2026-01-09", type: "car", distance: 15.2, emission: 3.1 },
-]
+import { toast } from "sonner"
+import { commuteService, type CommuteRecord, type CommuteStats } from "@/lib/services/commute.service"
+
+// 목업 데이터 제거 (API 연동)
 
 function CarIcon({ className, isActive }: { className?: string; isActive?: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
-      className={cn(className, isActive ? "text-[#22c55e]" : "text-muted-foreground")}
+      className={cn(className, isActive ? "text-[#3BB60D]" : "text-muted-foreground")}
     >
       <path
         d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"
@@ -53,7 +51,7 @@ function AnimatedEcoIcon({ isActive }: { isActive: boolean }) {
           <span className="absolute top-0 right-1 w-2 h-2 text-yellow-400 animate-[sparkle_1s_ease-in-out_infinite]">
             ✦
           </span>
-          <span className="absolute top-2 left-0 w-1.5 h-1.5 text-[#22c55e] animate-[sparkle_1s_ease-in-out_infinite_0.3s]">
+          <span className="absolute top-2 left-0 w-1.5 h-1.5 text-[#3BB60D] animate-[sparkle_1s_ease-in-out_infinite_0.3s]">
             ✦
           </span>
           <span className="absolute bottom-1 right-0 w-1 h-1 text-emerald-300 animate-[sparkle_1s_ease-in-out_infinite_0.6s]">
@@ -66,7 +64,7 @@ function AnimatedEcoIcon({ isActive }: { isActive: boolean }) {
         fill="none"
         className={cn(
           "w-8 h-8 transition-all duration-300",
-          isActive ? "text-[#22c55e] animate-[leafSway_2s_ease-in-out_infinite]" : "text-muted-foreground",
+          isActive ? "text-[#3BB60D] animate-[leafSway_2s_ease-in-out_infinite]" : "text-muted-foreground",
         )}
       >
         <path
@@ -75,7 +73,7 @@ function AnimatedEcoIcon({ isActive }: { isActive: boolean }) {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill={isActive ? "rgba(34, 197, 94, 0.2)" : "none"}
+          fill={isActive ? "rgba(59, 182, 13, 0.2)" : "none"}
         />
         <path d="M12 12v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         <path
@@ -106,8 +104,8 @@ function LeafIcon({ className }: { className?: string }) {
 }
 
 const vehicleTypes = [
-  { id: "hybrid", label: "하이브리드", icon: Battery, emission: 2.1, color: "text-green-400" },
-  { id: "ice", label: "내연기관", icon: Fuel, emission: 3.1, color: "text-red-400" },
+  { id: "hybrid", label: "하이브리드", icon: Battery, emission: 2.1, color: "text-[#FFE300]" },
+  { id: "ice", label: "내연기관", icon: Fuel, emission: 3.1, color: "text-[#FF9A00]" },
 ]
 
 const ecoTypes = [
@@ -121,7 +119,85 @@ export default function EmployeeCommutePage() {
   const [commuteMethod, setCommuteMethod] = useState<"car" | "eco" | null>(null)
   const [ecoType, setEcoType] = useState<"walk" | "public" | "ev" | null>(null)
   const [vehicleType, setVehicleType] = useState<"hybrid" | "ice" | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [history, setHistory] = useState<CommuteRecord[]>([])
+  const [stats, setStats] = useState<CommuteStats | null>(null)
+
   const distance = 15.2 // 기본 거리값 (주소 불러오기로 변경 가능)
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const [historyRes, statsRes] = await Promise.all([
+        commuteService.getHistory(undefined, undefined, 10),
+        commuteService.getStats('month')
+      ])
+
+      if (historyRes && historyRes.data) {
+        setHistory(historyRes.data)
+      }
+      setStats(statsRes)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleCheckIn = async () => {
+    if (!canSubmit()) return
+
+    try {
+      setLoading(true)
+
+      let record: CommuteRecord
+
+      if (commuteMethod === "eco") {
+        // Eco Logic
+        if (ecoType === "ev") {
+          record = {
+            date: format(date, "yyyy-MM-dd"),
+            usedCar: false, // Treated as Eco
+            vehicleType: "EV",
+            distance: distance, // EV travels distance
+            emissions: 0
+          }
+        } else {
+          // Walk / Public
+          record = {
+            date: format(date, "yyyy-MM-dd"),
+            usedCar: false,
+            vehicleType: null,
+            distance: 0,
+            emissions: 0
+          }
+        }
+      } else {
+        // Car Logic
+        record = {
+          date: format(date, "yyyy-MM-dd"),
+          usedCar: true,
+          vehicleType: vehicleType === "hybrid" ? "HYBRID" : "ICE",
+          distance: distance,
+          emissions: Number(calculateEmission())
+        }
+      }
+
+      await commuteService.checkIn(record)
+      toast.success("출근 기록이 등록되었습니다!")
+      fetchData() // Refresh
+
+      // Reset form
+      setCommuteMethod(null)
+      setEcoType(null)
+      setVehicleType(null)
+    } catch (error) {
+      toast.error("등록 실패. 다시 시도해주세요.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const calculateEmission = () => {
     if (commuteMethod === "eco") return 0
@@ -155,12 +231,12 @@ export default function EmployeeCommutePage() {
 
       <main className="mx-auto max-w-4xl px-4 py-6 space-y-6">
         {/* Hero Section - 인사말 및 요약 통계 */}
-        <div className="rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/20 p-6">
+        <div className="rounded-2xl bg-[#3BB60D]/10 border border-[#3BB60D]/20 p-6">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-[#22c55e]">안녕하세요, 김철수님!</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-[#3BB60D]">안녕하세요, 김철수님!</h1>
               <p className="text-muted-foreground flex items-center gap-1 mt-1">
-                오늘도 좋은 하루 되세요 <Sparkles className="h-4 w-4 text-yellow-400" />
+                오늘도 좋은 하루 되세요 <Sparkles className="h-4 w-4 text-[#FFE300]" />
               </p>
             </div>
             <div className="text-right text-muted-foreground">
@@ -173,21 +249,23 @@ export default function EmployeeCommutePage() {
 
           {/* 요약 카드 3개 */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-[#22c55e]/10">
+            <div className="rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-[#3BB60D]/10">
               <p className="text-xs text-muted-foreground mb-1">이번 달 자가용 출근</p>
-              <p className="text-2xl font-bold text-[#22c55e]">4/7일</p>
-              <p className="text-sm text-muted-foreground">57%</p>
+              <p className="text-2xl font-bold text-[#FF9A00]">
+                {stats?.carDays ?? 0}/{stats?.totalDays ?? 0}일
+              </p>
+              <p className="text-sm text-muted-foreground">{stats ? Math.round(stats.carPercentage) : 0}%</p>
             </div>
-            <div className="rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-[#22c55e]/10">
+            <div className="rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-[#3BB60D]/10">
               <p className="text-xs text-muted-foreground mb-1">이번 달 탄소 배출</p>
-              <p className="text-2xl font-bold text-[#22c55e]">12.4</p>
+              <p className="text-2xl font-bold text-[#FF9A00]">{stats?.totalEmissions.toFixed(1) ?? "0.0"}</p>
               <p className="text-sm text-muted-foreground">kg/CO₂</p>
             </div>
-            <div className="rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-[#22c55e]/10">
+            <div className="rounded-xl bg-card/60 backdrop-blur-sm p-4 border border-[#3BB60D]/10">
               <p className="text-xs text-muted-foreground mb-1">절감 기여도</p>
               <div className="flex items-center gap-1">
-                <TrendingDown className="h-5 w-5 text-[#22c55e]" />
-                <span className="text-2xl font-bold text-[#22c55e]">12%</span>
+                <TrendingDown className="h-5 w-5 text-[#3BB60D]" />
+                <span className="text-2xl font-bold text-[#3BB60D]">12%</span>
               </div>
               <p className="text-sm text-muted-foreground">팀 평균 대비</p>
             </div>
@@ -198,8 +276,8 @@ export default function EmployeeCommutePage() {
         <GreenPathCard>
           <GreenPathCardHeader>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#22c55e]/10">
-                <CarIcon className="h-5 w-5 text-[#22c55e]" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3BB60D]/10">
+                <CarIcon className="h-5 w-5 text-[#3BB60D]" />
               </div>
               <div>
                 <GreenPathCardTitle>오늘 출근 정보 등록</GreenPathCardTitle>
@@ -239,14 +317,14 @@ export default function EmployeeCommutePage() {
                   className={cn(
                     "relative flex flex-col items-start gap-3 rounded-xl border p-5 text-left transition-all duration-300",
                     commuteMethod === "eco"
-                      ? "border-[#22c55e] bg-[#22c55e]/10"
-                      : "border-border/50 bg-secondary/30 hover:bg-secondary/50 hover:border-[#22c55e]/50",
+                      ? "border-[#3BB60D] bg-[#3BB60D]/10"
+                      : "border-border/50 bg-secondary/30 hover:bg-secondary/50 hover:border-[#3BB60D]/50",
                   )}
                 >
                   {/* 체크 아이콘 */}
                   {commuteMethod === "eco" && (
-                    <div className="absolute top-4 right-4 w-6 h-6 rounded-full border-2 border-[#22c55e] flex items-center justify-center">
-                      <Check className="w-4 h-4 text-[#22c55e]" />
+                    <div className="absolute top-4 right-4 w-6 h-6 rounded-full border-2 border-[#3BB60D] flex items-center justify-center">
+                      <Check className="w-4 h-4 text-[#3BB60D]" />
                     </div>
                   )}
 
@@ -267,8 +345,8 @@ export default function EmployeeCommutePage() {
                           className={cn(
                             "px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5",
                             ecoType === eco.id
-                              ? "bg-[#22c55e] text-white"
-                              : "bg-[#22c55e]/20 text-[#22c55e] hover:bg-[#22c55e]/30",
+                              ? "bg-[#3BB60D] text-white"
+                              : "bg-[#3BB60D]/20 text-[#3BB60D] hover:bg-[#3BB60D]/30",
                           )}
                         >
                           {eco.icon && <eco.icon className="w-3.5 h-3.5" />}
@@ -296,14 +374,14 @@ export default function EmployeeCommutePage() {
                   className={cn(
                     "relative flex flex-col items-start gap-3 rounded-xl border p-5 text-left transition-all duration-300",
                     commuteMethod === "car"
-                      ? "border-red-500 bg-red-500/10"
-                      : "border-border/50 bg-secondary/30 hover:bg-secondary/50 hover:border-red-500/50",
+                      ? "border-[#FF9A00] bg-[#FF9A00]/10"
+                      : "border-border/50 bg-secondary/30 hover:bg-secondary/50 hover:border-[#FF9A00]/50",
                   )}
                 >
                   {/* 체크 아이콘 */}
                   {commuteMethod === "car" && (
-                    <div className="absolute top-4 right-4 w-6 h-6 rounded-full border-2 border-red-500 flex items-center justify-center">
-                      <Check className="w-4 h-4 text-red-500" />
+                    <div className="absolute top-4 right-4 w-6 h-6 rounded-full border-2 border-[#FF9A00] flex items-center justify-center">
+                      <Check className="w-4 h-4 text-[#FF9A00]" />
                     </div>
                   )}
 
@@ -335,8 +413,8 @@ export default function EmployeeCommutePage() {
                               "flex flex-col items-center gap-2 rounded-xl border p-4 transition-all",
                               vehicleType === vehicle.id
                                 ? vehicle.id === "ice"
-                                  ? "border-red-500 bg-red-500/10"
-                                  : "border-[#22c55e] bg-[#22c55e]/10"
+                                  ? "border-[#FF9A00] bg-[#FF9A00]/10"
+                                  : "border-[#FFE300] bg-[#FFE300]/10"
                                 : "border-border/50 bg-secondary/30 hover:bg-secondary/50",
                             )}
                           >
@@ -370,39 +448,29 @@ export default function EmployeeCommutePage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p
-                      className={cn("text-sm font-medium", commuteMethod === "eco" ? "text-[#22c55e]" : "text-red-400")}
+                      className={cn("text-sm font-medium", commuteMethod === "eco" ? "text-[#3BB60D]" : "text-[#FF9A00]")}
                     >
                       {commuteMethod === "eco"
                         ? `친환경 (${ecoType === "walk" ? "도보" : ecoType === "public" ? "대중교통" : "전기차"})`
                         : `자가용 (${vehicleTypes.find((v) => v.id === vehicleType)?.label})`}
                     </p>
                     <p
-                      className={cn("text-3xl font-bold", commuteMethod === "eco" ? "text-[#22c55e]" : "text-red-400")}
+                      className={cn("text-3xl font-bold", commuteMethod === "eco" ? "text-[#3BB60D]" : "text-[#FF9A00]")}
                     >
                       {calculateEmission()} kg/CO<sub>2</sub>
                     </p>
                     {commuteMethod === "eco" && (
-                      <p className="text-sm text-[#22c55e] flex items-center gap-1 mt-1">
+                      <p className="text-sm text-[#3BB60D] flex items-center gap-1 mt-1">
                         <span>🪙</span> 300 카카오페이 포인트 적립 예정
                       </p>
                     )}
                   </div>
                   <Button
-                    className={cn("font-semibold px-6 py-5", "bg-[#22c55e] hover:bg-[#22c55e]/90 text-white")}
-                    disabled={!canSubmit()}
-                    onClick={() => {
-                      if (canSubmit()) {
-                        const methodText =
-                          commuteMethod === "eco"
-                            ? `친환경 (${ecoType === "walk" ? "도보" : ecoType === "public" ? "대중교통" : "전기차"})`
-                            : `자가용 (${vehicleTypes.find((v) => v.id === vehicleType)?.label})`
-                        alert(
-                          `${format(date, "yyyy년 M월 d일", { locale: ko })} 출근이 ${methodText}으로 등록되었습니다.`,
-                        )
-                      }
-                    }}
+                    className={cn("font-semibold px-6 py-5", "bg-[#3BB60D] hover:bg-[#3BB60D]/90 text-white")}
+                    disabled={!canSubmit() || loading}
+                    onClick={handleCheckIn}
                   >
-                    <Check className="w-5 h-5 mr-2" />
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5 mr-2" />}
                     {commuteMethod === "eco" ? "등록하고 포인트 받기" : "등록하기"}
                   </Button>
                 </div>
@@ -418,7 +486,11 @@ export default function EmployeeCommutePage() {
           </GreenPathCardHeader>
           <GreenPathCardContent>
             <div className="space-y-3">
-              {recentRecords.map((record, idx) => (
+              {history.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  아직 출근 기록이 없습니다.
+                </div>
+              ) : history.map((record, idx) => (
                 <div
                   key={idx}
                   className="flex items-center justify-between py-3 border-b border-border/30 last:border-0"
@@ -427,27 +499,27 @@ export default function EmployeeCommutePage() {
                     <div
                       className={cn(
                         "flex h-10 w-10 items-center justify-center rounded-full",
-                        record.type === "eco" ? "bg-[#22c55e]/10" : "bg-red-500/10",
+                        !record.usedCar ? "bg-[#3BB60D]/10" : "bg-[#FF9A00]/10",
                       )}
                     >
-                      {record.type === "eco" ? (
-                        <LeafIcon className="h-5 w-5 text-[#22c55e]" />
+                      {!record.usedCar ? (
+                        <LeafIcon className="h-5 w-5 text-[#3BB60D]" />
                       ) : (
-                        <CarIcon className="h-5 w-5 text-red-400" />
+                        <CarIcon className="h-5 w-5 text-[#FF9A00]" />
                       )}
                     </div>
                     <div>
                       <p className="font-medium text-foreground">{record.date}</p>
                       <p className="text-sm text-muted-foreground">
-                        {record.type === "eco" ? "친환경 출근" : "자가용 (ICE)"}
+                        {!record.usedCar ? "친환경 출근" : `자가용 (${record.vehicleType})`}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={cn("font-semibold", record.type === "eco" ? "text-[#22c55e]" : "text-red-400")}>
-                      {record.emission} kg/CO₂
+                    <p className={cn("font-semibold", !record.usedCar ? "text-[#3BB60D]" : "text-[#FF9A00]")}>
+                      {Number(record.emissions).toFixed(1)} kg/CO₂
                     </p>
-                    {record.distance && <p className="text-sm text-muted-foreground">{record.distance} km</p>}
+                    {record.usedCar && <p className="text-sm text-muted-foreground">{Number(record.distance).toFixed(1)} km</p>}
                   </div>
                 </div>
               ))}

@@ -37,21 +37,14 @@ export function GreenPathHeader({ role, currentPath = "/" }: HeaderProps) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo - 역할별 메인 대시보드로 이동 */}
         <Link href={homePath} className="flex items-center gap-3">
-          <div
-            className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-xl",
-              role === "employee" ? "bg-employee-primary" : "gradient-consultant",
-            )}
-          >
-            {role === "employee" ? (
-              <Home className="h-5 w-5 text-primary-foreground" />
-            ) : (
-              <LayoutDashboard className="h-5 w-5 text-white" />
-            )}
+          <div className="flex items-center gap-1">
+            <span className="text-2xl font-light tracking-tight text-white">Next</span>
+            <span className="text-2xl font-bold tracking-tight text-white">ZERO</span>
+            <span className="text-xs align-super text-white/70">™</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-foreground">GreenPath</span>
-            <span className="text-xs text-muted-foreground">{roleLabel}</span>
+            {/* Role Label can be kept or removed depending on strict design, keeping for UX context */}
+            <span className="text-xs text-muted-foreground ml-2 px-2 py-0.5 rounded-full bg-white/10">{roleLabel}</span>
           </div>
         </Link>
 

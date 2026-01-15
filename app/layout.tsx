@@ -7,25 +7,13 @@ import "./globals.css"
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "GreenPath - 탄소 관리 플랫폼",
-  description: "중소·중견기업을 위한 B2B 탄소 관리 SaaS",
+  title: "Next ZERO - 지속가능한 미래를 위한 탄소 중립 플랫폼",
+  description: "기업의 탄소 배출 관리와 ESG 경영을 위한 올인원 솔루션",
   generator: "v0.app",
   icons: {
     icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
+      { url: "/icon.svg", type: "image/svg+xml" }
     ],
-    apple: "/apple-icon.png",
   },
 }
 

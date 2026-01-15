@@ -5,52 +5,59 @@
 
 /* GreenPath 다크 모드 테마 - 요청된 색상으로 전체 교체 */
 :root {
-  /* GreenPath Deep Dark Theme */
-  --background: #0b0f1a;
-  --foreground: #f8fafc;
-  --card: #161b26;
-  --card-foreground: #f8fafc;
-  --popover: #161b26;
-  --popover-foreground: #f8fafc;
-  --primary: #f8fafc;
-  --primary-foreground: #0b0f1a;
-  --secondary: #1c2333;
-  --secondary-foreground: #f8fafc;
-  --muted: #1c2333;
-  --muted-foreground: #94a3b8;
-  --accent: #1c2333;
-  --accent-foreground: #f8fafc;
-  --destructive: #ef4444;
-  --destructive-foreground: #fecaca;
-  --border: #2d3748;
-  --input: #1c2333;
-  --ring: #22c55e;
+  /* Next ZERO Theme */
+  --background: #1a1625;
+  --foreground: #ffffff;
+  --card: #292140;
+  --card-foreground: #ffffff;
+  --popover: #292140;
+  --popover-foreground: #ffffff;
+  --primary: #FF9A00;
+  --primary-foreground: #1a1625;
+  --secondary: #322a4d;
+  --secondary-foreground: #ffffff;
+  --muted: #322a4d;
+  --muted-foreground: #a39eb5;
+  --accent: #FF9A00;
+  --accent-foreground: #1a1625;
+  --destructive: #DB4742;
+  --destructive-foreground: #ffffff;
+  --border: #453c5c;
+  --input: #322a4d;
+  --ring: #FF9A00;
 
-  /* GreenPath Custom Colors */
-  --employee-primary: #22c55e;
-  --employee-primary-hover: #16a34a;
-  /* 그라데이션 제거 - 단일 컬러로 변경 */
-  --consultant-primary: #6366f1;
-  --consultant-primary-hover: #4f46e5;
+  /* branding colors */
+  --employee-primary: #3BB60D;
+  /* New Green */
+  --employee-primary-hover: #2f910a;
+
+  --consultant-primary: #FF9A00;
+  /* New Orange */
+  --consultant-primary-hover: #e68a00;
 
   /* Chart Colors */
-  --chart-1: #22c55e;
-  --chart-2: #3b82f6;
-  --chart-3: #a855f7;
-  --chart-4: #f59e0b;
-  --chart-5: #ef4444;
+  --chart-1: #FF9A00;
+  /* ICE/Commute */
+  --chart-2: #FFB200;
+  /* EV/Trip */
+  --chart-3: #FFE300;
+  /* Hybrid/Logistics */
+  --chart-4: #3BB60D;
+  /* Flight Dom */
+  --chart-5: #DB4742;
+  /* Taxi */
 
   --radius: 0.75rem;
 
   /* Sidebar */
-  --sidebar: #0d1117;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #22c55e;
-  --sidebar-primary-foreground: #0b0f1a;
-  --sidebar-accent: #1c2333;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #2d3748;
-  --sidebar-ring: #22c55e;
+  --sidebar: #151020;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #FF9A00;
+  --sidebar-primary-foreground: #1a1625;
+  --sidebar-accent: #292140;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #453c5c;
+  --sidebar-ring: #FF9A00;
 }
 
 @theme inline {
@@ -105,6 +112,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -112,13 +120,14 @@
 
 /* 그라데이션 유틸리티 클래스 제거 */
 @layer utilities {
+
   /* Glow effects */
   .card-glow-green {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+    box-shadow: 0 0 20px rgba(59, 182, 13, 0.1);
   }
 
   .card-glow-purple {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 20px rgba(255, 154, 0, 0.1);
   }
 
   /* Text utilities */

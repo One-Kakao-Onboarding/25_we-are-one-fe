@@ -7,17 +7,19 @@ export default function HomePage() {
     <main className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-16">
       {/* Logo & Title Section */}
       <div className="text-center space-y-4 mb-12">
-        <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-employee-primary mx-auto shadow-lg shadow-employee-primary/20">
-          <Zap className="h-10 w-10 text-primary-foreground" />
+
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="text-7xl font-light tracking-tight text-white">Next</span>
+          <span className="text-7xl font-bold tracking-tight text-white">ZERO</span>
+          <span className="text-xl align-super text-white/70">™</span>
         </div>
-        <h1 className="text-4xl font-bold text-foreground tracking-tight">GreenPath</h1>
-        <p className="text-muted-foreground text-lg">중소·중견기업을 위한 탄소 관리 플랫폼</p>
+        <p className="text-muted-foreground text-lg">지속가능한 미래를 위한 탄소 중립 플랫폼</p>
       </div>
 
       {/* Role Selection Cards */}
       <div className="grid md:grid-cols-2 gap-6 w-full max-w-3xl mb-12">
         {/* Employee Card */}
-        <Link href="/employee/commute" className="block">
+        <Link href="/login" className="block">
           <GreenPathCard variant="employee" hover className="group h-full cursor-pointer">
             <GreenPathCardContent className="p-2">
               <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary border border-border/50 mb-8">
@@ -49,7 +51,7 @@ export default function HomePage() {
         </Link>
 
         {/* Consultant Card */}
-        <Link href="/consultant/dashboard" className="block">
+        <Link href="/login" className="block">
           <GreenPathCard variant="consultant" hover className="group h-full cursor-pointer">
             <GreenPathCardContent className="p-2">
               <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary border border-border/50 mb-8">
