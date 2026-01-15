@@ -32,6 +32,7 @@ async function fetchJson<T>(endpoint: string, options: RequestOptions = {}): Pro
     // Default headers
     const headers = {
         'Content-Type': 'application/json',
+        'Bypass-Tunnel-Reminder': 'true',
         ...init.headers,
     };
 
